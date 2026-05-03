@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import OpenAI from 'openai';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,8 @@ Rules:
 4. Use bullet points and numbered lists when explaining multi-step processes.
 5. Keep answers concise but thorough (2-4 paragraphs max).
 6. Be encouraging — remind users that their vote matters!`;
+
+// --- API ROUTES (must be defined BEFORE catch-all) ---
 
 app.post('/api/chat', async (req, res) => {
   try {
@@ -70,15 +73,31 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Serve static files from the React app build
-const clientDistPath = path.join(__dirname, '..', 'client', 'dist');
+// --- STATIC FILE SERVING ---
+
+const clientDistPath = path.resolve(__dirname, '..', 'client', 'dist');
+const indexHtmlPath = path.join(clientDistPath, 'index.html');
+
+// Debug logging — helps diagnose path issues on Render
+console.log('__dirname:', __dirname);
+console.log('Resolved client dist path:', clientDistPath);
+console.log('index.html exists:', fs.existsSync(indexHtmlPath));
+
+// Serve static assets (JS, CSS, images) from the React build
 app.use(express.static(clientDistPath));
 
-// Catch-all: send index.html for any non-API route (SPA client-side routing)
+// Catch-all: return index.html for client-side routing (SPA)
 app.get('*', (_req, res) => {
-  res.sendFile(path.join(clientDistPath, 'index.html'));
+  if (fs.existsSync(indexHtmlPath)) {
+    res.sendFile(indexHtmlPath);
+  } else {
+    res.status(500).send(
+      'Frontend not built. Run: cd client && npm install && npm run build\n' +
+      `Expected index.html at: ${indexHtmlPath}`
+    );
+  }
 });
 
 app.listen(PORT, () => {
-  console.log(`VoteTutor server running on http://localhost:${PORT}`);
+  console.log(`VoteTutor server running on port ${PORT}`);
 });

@@ -1,0 +1,10 @@
+{
+  "name": "votetutor",
+  "version": "1.0.0",
+  "description": "VoteTutor — AI Election Process Education App",
+  "private": true,
+  "scripts": {
+    "build": "cd server && npm install && cd ../client && npm install && npm run build",
+    "start": "cd server && npm start"
+  }
+}
