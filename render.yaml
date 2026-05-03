@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: votetutor
+    runtime: node
+    rootDir: ./
+    buildCommand: cd server && npm install && cd ../client && npm install && npm run build
+    startCommand: cd server && node index.js
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
