@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ChatBubble from '../components/ChatBubble';
 
-const API_URL = 'http://localhost:3001/api/chat';
+const API_URL = '/api/chat';
 const SUGGESTED = [
   "How do I register to vote?",
   "What happens on Election Day?",
